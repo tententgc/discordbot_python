@@ -47,6 +47,5 @@ async def on_message(message):
         await bot.logout()
     await bot.process_commands(message)
 
-bot.run('ODY2OTQ1MDQ4MzM5NTQ2MTIy.YPZ7fg.5Dxvt_lWRKlifejqf1ktEBtIyuQ') #use fake token
-
-#ODY2OTQ1MDQ4MzM5NTQ2MTIy.YPZ7fg.T1x18JK7TWEznVwxyqIUNLJxgTQ    real token
+# use fake token
+bot.run('')
