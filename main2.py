@@ -9,9 +9,9 @@ from discord.ext import commands
 from datetime import datetime, timedelta
 import itertools
 
-# # อันนี้ ไม่ต้องสนใจครับ เป็น library ไว้แอบ token
+# # ibrary ไว้แอบ token
 # import os
-# from dotenv import load_dotenv  # มีไว้แอบ token ครับ 4 บรรทัดนี้ ไม่งั้นเดี๋ยวมันไม่ให้ผมเอาโค้ดลง github
+# from dotenv import load_dotenv  
 # load_dotenv()
 # token = os.getenv('TOKEN')
 # #############################################
@@ -21,7 +21,7 @@ import itertools
 message_lastseen = datetime.now()
 message2_lastseen = datetime.now()
 
-bot = commands.Bot(command_prefix='tt',help_command=None)
+bot = commands.Bot(command_prefix='t',help_command=None)
 
 youtube_dl.utils.bug_reports_message = lambda: ''
 
@@ -197,7 +197,11 @@ async def send(ctx):
 @bot.event #async/await
 async def on_message(message):
     global message_lastseen, message2_lastseen
-    if message.content == '!user':
+    if message.content == '555':
+        await message.channel.send("ขำหาพ่องมึงหรอ")
+    elif message.content == 'หยีเหลี่ยม':
+        await message.channel.send("หยีเหลี่ยมมากๆ รับไม่ได้")
+    elif message.content == '!user':
         await message.channel.send(str(message.author.name) + ' Hello')
     elif message.content == 'นายชื่ออะไร' and datetime.now() >= message_lastseen:
         message_lastseen = datetime.now() + timedelta(seconds=5)
@@ -210,6 +214,9 @@ async def on_message(message):
     elif message.content == '!logout':
         await bot.logout()
     await bot.process_commands(message)
+
+
+
 
 @bot.command() 
 async def p(ctx,* ,search: str):
@@ -325,5 +332,14 @@ async def skip(ctx):
     voice_client.stop()
     await ctx.send(f'**`{ctx.author}`**: Skipped the song!')
     
+
+
+
+
+
+
+
+
+
 
 bot.run('')
