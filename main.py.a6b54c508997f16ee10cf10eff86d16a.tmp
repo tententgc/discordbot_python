@@ -331,15 +331,26 @@ async def skip(ctx):
 
     voice_client.stop()
     await ctx.send(f'**`{ctx.author}`**: Skipped the song!')
+
+
+@bot.command()
+async def skip(ctx):
+    voice_client = get(bot.voice_clients, guild=ctx.guild)
+
+    if voice_client == None or not voice_client.is_connected():
+        await ctx.channel.send("Bot is not connected to vc", delete_after=10)
+        return
+
+    if voice_client.is_paused():
+        pass
+    elif not voice_client.is_playing():
+        return
+
+    voice_client.stop()
+    await ctx.send(f'**`{ctx.author}`**: Skipped the song!')
+
+
+
     
 
-
-
-
-
-
-
-
-
-
-bot.run('')
+bot.run('ODY2OTQ1MDQ4MzM5NTQ2MTIy.YPZ7fg.l3xP9_uPUiCkv3HEYoFMP4rZGqo')

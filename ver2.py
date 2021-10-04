@@ -11,7 +11,7 @@ import itertools
 
 # # ibrary ไว้แอบ token
 # import os
-# from dotenv import load_dotenv  
+# from dotenv import load_dotenv
 # load_dotenv()
 # token = os.getenv('TOKEN')
 # #############################################
@@ -21,7 +21,7 @@ import itertools
 message_lastseen = datetime.now()
 message2_lastseen = datetime.now()
 
-bot = commands.Bot(command_prefix='t',help_command=None)
+bot = commands.Bot(command_prefix='t', help_command=None)
 
 youtube_dl.utils.bug_reports_message = lambda: ''
 
@@ -36,15 +36,18 @@ ytdl_format_options = {
     'quiet': True,
     'no_warnings': True,
     'default_search': 'auto',
-    'source_address': '0.0.0.0' # bind to ipv4 since ipv6 addresses cause issues sometimes
+    # bind to ipv4 since ipv6 addresses cause issues sometimes
+    'source_address': '0.0.0.0'
 }
 
 ffmpeg_options = {
     'options': '-vn',
-    "before_options": "-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5" ## song will end if no this line
+    # song will end if no this line
+    "before_options": "-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5"
 }
 
 ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
+
 
 class YTDLSource(discord.PCMVolumeTransformer):
 
@@ -75,7 +78,8 @@ class YTDLSource(discord.PCMVolumeTransformer):
             # take first item from a playlist
             data = data['entries'][0]
 
-        await ctx.send(f'```ini\n[Added {data["title"]} to the Queue.]\n```') #delete after can be added
+        # delete after can be added
+        await ctx.send(f'```ini\n[Added {data["title"]} to the Queue.]\n```')
 
         if download:
             source = ytdl.prepare_filename(data)
@@ -91,10 +95,12 @@ class YTDLSource(discord.PCMVolumeTransformer):
         loop = loop or asyncio.get_event_loop()
         requester = data['requester']
 
-        to_run = partial(ytdl.extract_info, url=data['webpage_url'], download=False)
+        to_run = partial(ytdl.extract_info,
+                         url=data['webpage_url'], download=False)
         data = await loop.run_in_executor(None, to_run)
 
         return cls(discord.FFmpegPCMAudio(data['url'], **ffmpeg_options), data=data, requester=requester)
+
 
 class MusicPlayer:
     """A class which is assigned to each guild using the bot for Music.
@@ -103,7 +109,8 @@ class MusicPlayer:
     When the bot disconnects from the Voice it's instance will be destroyed.
     """
 
-    __slots__ = ('bot', '_guild', '_channel', '_cog', 'queue', 'next', 'current', 'np', 'volume')
+    __slots__ = ('bot', '_guild', '_channel', '_cog',
+                 'queue', 'next', 'current', 'np', 'volume')
 
     def __init__(self, ctx):
         self.bot = ctx.bot
@@ -147,7 +154,8 @@ class MusicPlayer:
             source.volume = self.volume
             self.current = source
 
-            self._guild.voice_client.play(source, after=lambda _: self.bot.loop.call_soon_threadsafe(self.next.set))
+            self._guild.voice_client.play(
+                source, after=lambda _: self.bot.loop.call_soon_threadsafe(self.next.set))
             self.np = await self._channel.send(f'**Now Playing:** `{source.title}` requested by '
                                                f'`{source.requester}`')
             await self.next.wait()
@@ -170,9 +178,11 @@ class MusicPlayer:
 
 ############
 
+
 @bot.event
 async def on_ready():
     print(f"Logged in as {bot.user}")
+
 
 @bot.command()
 async def test(ctx, *, par):
@@ -181,48 +191,42 @@ async def test(ctx, *, par):
 
 @bot.command()
 async def help(ctx):
-    emBed = discord.Embed(title="tutotial bot help",description="All avilable bot commands", color=0x6f00ff)
+    emBed = discord.Embed(title="tutotial bot help",
+                          description="All avilable bot commands", color=0x6f00ff)
     emBed.add_field(name="help", value="Get help command", inline=False)
-    emBed.add_field(name="test", value="Respond message you send", inline=False)
-    emBed.add_field(name="send", value="send hello message to user", inline=False)
-    emBed.set_thumbnail(url='https://raw.githubusercontent.com/tententgc/discordbot_python/main/197365719_298203481983007_289378278497279769_n.jpg')
-    emBed.set_footer(text='tenten discordbot',icon_url='https://raw.githubusercontent.com/tententgc/discordbot_python/main/197365719_298203481983007_289378278497279769_n.jpg')
+    emBed.add_field(
+        name="test", value="Respond message you send", inline=False)
+    emBed.add_field(
+        name="send", value="send hello message to user", inline=False)
+    emBed.set_thumbnail(
+        url='https://raw.githubusercontent.com/tententgc/discordbot_python/main/197365719_298203481983007_289378278497279769_n.jpg')
+    emBed.set_footer(text='tenten discordbot',
+                     icon_url='https://raw.githubusercontent.com/tententgc/discordbot_python/main/197365719_298203481983007_289378278497279769_n.jpg')
     await ctx.channel.send(embed=emBed)
-    
+
+
 @bot.command()
 async def send(ctx):
     print(ctx.channel)
     await ctx.channel.send('Hello')
 
-@bot.event #async/await
+
+@bot.event  # async/await
 async def on_message(message):
     global message_lastseen, message2_lastseen
-    if message.content == '555':
-        await message.channel.send("ขำหาพ่องมึงหรอ")
-    elif message.content == 'หยีเหลี่ยม':
-        await message.channel.send("หยีเหลี่ยมมากๆ รับไม่ได้")
-    elif message.content == '!user':
-        await message.channel.send(str(message.author.name) + ' Hello')
-    elif message.content == 'นายชื่ออะไร' and datetime.now() >= message_lastseen:
-        message_lastseen = datetime.now() + timedelta(seconds=5)
-        await message.channel.send('ฉันชื่อ ' + str(bot.user.name))
-        #logging 
-        print('{0} เรียกใช้ นายชื่ออะไร ตอน {1} และจะใช้ได้อีกทีตอน {2}'.format(message.author.name,datetime.now(),message_lastseen))
-    elif message.content == 'ผมชื่ออะไร' and datetime.now() >= message2_lastseen:
-        message2_lastseen = datetime.now() + timedelta(seconds=5)
-        await message.channel.send('นายชื่อ ' + str(message.author.name))
-    elif message.content == '!logout':
-        await bot.logout()
+    b = ["หยีเหลี่ยม", 'มีปัญหาหรอ', 'เหงามั้ยคะ', 'ไม่ตอบหรอ','บอทกาก', 'ตอบช้าจัง',"ปากแซ่บจัง",'ทำไรอ่ะ']
+    c = ['นั่นดิเหลี่ยมเกิน', 'ใช่มีปัญหากับมึงอ่ะแหละ', 'เหงาแต่ไม่เท่ามึง','ไม่อยากตอบมึงอ่ะหยี','กากแล้วไงเ่ก่่งกว่ามึงและกัน','ไม่ช้านะ','อร่อยแล้วกัน', 'ฆ่าพ่อมึงอ่ะ']
+    for i in range(len(b)):
+        if b[i] == message.content:
+            await message.channel.send(c[i])
     await bot.process_commands(message)
 
 
-
-
-@bot.command() 
-async def p(ctx,* ,search: str):
+@bot.command()
+async def p(ctx, *, search: str):
     channel = ctx.author.voice.channel
     voice_client = get(bot.voice_clients, guild=ctx.guild)
-    
+
     if voice_client == None:
         await ctx.channel.send("Joined")
         await channel.connect()
@@ -237,15 +241,17 @@ async def p(ctx,* ,search: str):
 
 
 players = {}
+
+
 def get_player(ctx):
     try:
         player = players[ctx.guild.id]
     except:
         player = MusicPlayer(ctx)
         players[ctx.guild.id] = player
-    
+
     return player
-    
+
 
 @bot.command()
 async def stop(ctx):
@@ -274,7 +280,6 @@ async def pause(ctx):
 
     voice_client.pause()
 
-    
 
 @bot.command()
 async def resume(ctx):
@@ -288,8 +293,6 @@ async def resume(ctx):
         return
 
     voice_client.resume()
-
-    
 
 
 @bot.command()
@@ -305,16 +308,19 @@ async def q(ctx):
     if voice_client == None or not voice_client.is_connected():
         await ctx.channel.send("Bot is not connected to vc", delete_after=10)
         return
-    
+
     player = get_player(ctx)
     if player.queue.empty():
         return await ctx.send('There are currently no more queued songs')
-    
+
     # 1 2 3
-    upcoming = list(itertools.islice(player.queue._queue,0,player.queue.qsize()))
+    upcoming = list(itertools.islice(
+        player.queue._queue, 0, player.queue.qsize()))
     fmt = '\n'.join(f'**`{_["title"]}`**' for _ in upcoming)
-    embed = discord.Embed(title=f'Upcoming - Next {len(upcoming)}', description=fmt)
+    embed = discord.Embed(
+        title=f'Upcoming - Next {len(upcoming)}', description=fmt)
     await ctx.send(embed=embed)
+
 
 @bot.command()
 async def skip(ctx):
@@ -332,10 +338,5 @@ async def skip(ctx):
     voice_client.stop()
     await ctx.send(f'**`{ctx.author}`**: Skipped the song!')
 
-
-
-
-
-    
 
 bot.run('ODY2OTQ1MDQ4MzM5NTQ2MTIy.YPZ7fg.l3xP9_uPUiCkv3HEYoFMP4rZGqo')
