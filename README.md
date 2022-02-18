@@ -1,2 +1,2 @@
 # discordbot_python
-This is a bot discord from python languese
+This is a bot discord from python language
